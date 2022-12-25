@@ -1,4 +1,5 @@
-﻿#include<iostream>
+﻿#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
 #include<fstream>
 #include<string>
 #include<map>
@@ -10,6 +11,8 @@ using std::endl;
 
 #define tab "\t"
 #define delimiter "\n-----------------------------------------------------------------\n"
+
+//#define STD_STRING_PARSE
 
 const std::map<int, std::string> violation =
 {
@@ -107,10 +110,10 @@ void load(std::map<std::string, std::list<Crime>>& base, const std::string& file
 			std::getline(fin, all_crimes);
 			all_crimes.erase(0, 1);	// удаляем табуляцию из строки
 			//https://legacy.cplusplus.com/reference/string/string/erase/
-			size_t start = 0;
-			size_t end = 0;
+			
+#ifdef STD_STRING_PARSE
 			for (
-				start = 0, end = all_crimes.find(',');
+				int start = 0, end = all_crimes.find(',');
 				/*end != std::string::npos*/;
 				start = end + 1, end = all_crimes.find(',', end + 1)
 				)
@@ -124,6 +127,23 @@ void load(std::map<std::string, std::list<Crime>>& base, const std::string& file
 				base[licence_plate].push_back(crime);
 				if (end == std::string::npos)break;
 			}
+#endif // STD_STRING_PARSE
+
+			int size = all_crimes.size() + 1;
+			char* sz_buffer = new char[size] {};
+			strcpy_s(sz_buffer, size, all_crimes.c_str());
+
+			char delimiters[] = ",;";
+			for (char* pch = strtok(sz_buffer, delimiters); pch; pch = strtok(NULL, delimiters))
+			{
+				int id = std::atoi(pch);
+				pch[0] = ' ';
+				while (pch[0] == ' ')
+					for (int i = 0; pch[i]; i++)pch[i] = pch[i + 1];
+				Crime crime(id, pch);
+				base[licence_plate].push_back(crime);
+			}
+			delete[] sz_buffer;
 		}
 		fin.close();
 	}
