@@ -12,7 +12,7 @@ using std::endl;
 #define tab "\t"
 #define delimiter "\n-----------------------------------------------------------------\n"
 
-//#define STD_STRING_PARSE
+#define STD_STRING_PARSE
 
 const std::map<int, std::string> violation =
 {
@@ -129,6 +129,7 @@ void load(std::map<std::string, std::list<Crime>>& base, const std::string& file
 			}
 #endif // STD_STRING_PARSE
 
+#ifndef STD_STRING_PARSE
 			int size = all_crimes.size() + 1;
 			char* sz_buffer = new char[size] {};
 			strcpy_s(sz_buffer, size, all_crimes.c_str());
@@ -144,6 +145,8 @@ void load(std::map<std::string, std::list<Crime>>& base, const std::string& file
 				base[licence_plate].push_back(crime);
 			}
 			delete[] sz_buffer;
+#endif // !STD_STRING_PARSE
+
 		}
 		fin.close();
 	}
